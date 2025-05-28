@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Italic } from "lucide-react"
 import Link from "next/link"
 
 /**
@@ -25,7 +25,7 @@ export function HeroSection() {
 
         {/* Supporting description explaining the core functionality */}
         <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          Upload PDFs and YouTube videos, then engage in intelligent conversations powered by your knowledge base.
+          Upload PDFs and YouTube videos, then engage in intelligent conversations powered by <span className="italic">your very own</span> knowledge base.
         </p>
 
         {/* Call-to-action button */}
@@ -33,7 +33,7 @@ export function HeroSection() {
           <Link href="/upload">
             <Button
               size="lg"
-              className="px-6 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 font-medium transition-colors"
+              className="px-6 py-3 bg-black dark:bg-white text-white dark:text-black cursor-pointer hover:bg-zinc-800 dark:hover:bg-zinc-200 font-medium transition-colors"
               aria-label="Start using CortexChat for free"
             >
               Get Started

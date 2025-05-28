@@ -39,13 +39,6 @@ export function Navigation() {
             >
               Features
             </a>
-            <a
-              href="#docs"
-              className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors text-sm"
-              aria-label="Navigate to documentation"
-            >
-              Docs
-            </a>
             <Button
               variant="ghost"
               size="sm"
