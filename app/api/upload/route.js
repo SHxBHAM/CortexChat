@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
+import { randomUUID } from 'crypto';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { prisma } from '../../../lib/prisma/client';
-import { splitText } from '../../../lib/langchain/text-splitter';
-import { generateEmbedding } from '../../../lib/gemini';
 
 export const runtime = 'nodejs';
 
+// This endpoint is currently disabled. PDF upload is not supported for now.
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -14,48 +16,44 @@ export async function POST(req) {
   }
 
   try {
-    const { text: pdfText, filename } = await req.json();
+    const formData = await req.formData();
+    const file = formData.get('file');
 
-    if (!pdfText || !filename) {
-      return NextResponse.json({ error: 'Missing text or filename' }, { status: 400 });
+    if (!file || typeof file === 'string') {
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
+    const userId = session.user.id;
+    const originalFilename = file.name;
+    const uniqueFilename = `${randomUUID()}.pdf`;
+
+    // Create a user-specific directory
+    const userUploadDir = path.join(process.cwd(), 'uploads', `user_${userId}`);
+    await mkdir(userUploadDir, { recursive: true });
+
+    // Define the full file path for the uniquely named file
+    const filePath = path.join(userUploadDir, uniqueFilename);
+    const relativeFilePath = path.join('uploads', `user_${userId}`, uniqueFilename);
+
+    // Save the file
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await writeFile(filePath, buffer);
+
+    // Create a document record in the database
     const document = await prisma.document.create({
       data: {
-        name: filename,
+        name: originalFilename,
         type: 'PDF',
-        userId: session.user.id,
+        filePath: relativeFilePath,
+        userId: userId,
       },
     });
 
-    const chunks = await splitText(pdfText);
-
-    const chunkEmbeddings = await Promise.all(
-      chunks.map(async (textChunk) => {
-        const embedding = await generateEmbedding(textChunk);
-        return {
-          text: textChunk,
-          embedding,
-          documentId: document.id,
-        };
-      })
-    );
-
-    await prisma.$transaction(
-      chunkEmbeddings.map((chunkData) =>
-        prisma.chunk.create({
-          data: {
-            text: chunkData.text,
-            embedding: chunkData.embedding,
-            documentId: chunkData.documentId,
-          },
-        })
-      )
-    );
-
     return NextResponse.json({ success: true, documentId: document.id });
+
   } catch (error) {
     console.error('[Error] Upload handler failed:', error);
-    return NextResponse.json({ error: 'Failed to process PDF text' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to process file' }, { status: 500 });
   }
 }

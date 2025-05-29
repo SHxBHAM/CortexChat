@@ -67,9 +67,10 @@ enum DocumentType {
 
 model Document {
   id        String       @id @default(cuid())
-  name      String
+  name      String       // Original filename for display
   type      DocumentType
-  url       String? // URL for YouTube, null for PDF
+  filePath  String?      // Path to the file stored on the server
+  url       String?      // URL for external sources like YouTube
   createdAt DateTime     @default(now())
   userId    String
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
