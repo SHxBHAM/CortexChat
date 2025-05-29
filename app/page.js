@@ -1,9 +1,9 @@
 "use client"
 
-import { Navigation } from "@/components/nav"
-import { HeroSection } from "@/components/hero-section"
-import { FeaturesSection } from "@/components/features-section"
-import { HowItWorksSection } from "@/components/how-section"
+import { Navigation } from "../components/nav.jsx"
+import { HeroSection } from "../components/hero-section.jsx"
+import { FeaturesSection } from "../components/features-section.jsx"
+import { HowItWorksSection } from "../components/how-section.jsx"
 
 /**
  * Home page component - main landing page

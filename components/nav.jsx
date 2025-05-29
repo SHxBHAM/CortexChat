@@ -1,9 +1,11 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "./ui/button"
 import { Menu} from "lucide-react"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ThemeToggle } from "./theme-toggle"
 import Link from "next/link"
+import { useSession, signIn, signOut } from "next-auth/react"
+import Image from "next/image"
 
 /**
  * Navigation component providing the main application header
@@ -14,6 +16,8 @@ import Link from "next/link"
  * - Accessible navigation links with proper hover states
  */
 export function Navigation() {
+  const { data: session } = useSession()
+
   return (
     <nav
       className="border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black"
@@ -51,6 +55,25 @@ export function Navigation() {
               
             </Button>
             <ThemeToggle />
+
+            {session?.user ? (
+              <div className="flex items-center gap-4">
+                <Button onClick={() => signOut()} variant="ghost" size="sm">
+                  Sign Out
+                </Button>
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name}
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+              </div>
+            ) : (
+              <Button onClick={() => signIn("google")} variant="ghost" size="sm">
+                Sign In
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
