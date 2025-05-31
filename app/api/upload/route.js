@@ -8,7 +8,6 @@ import { prisma } from '../../../lib/prisma/client';
 
 export const runtime = 'nodejs';
 
-// This endpoint is currently disabled. PDF upload is not supported for now.
 export async function POST(req) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
@@ -21,6 +20,14 @@ export async function POST(req) {
 
     if (!file || typeof file === 'string') {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    }
+
+    // Validate file type and size
+    if (file.type !== 'application/pdf') {
+      return NextResponse.json({ error: 'Only PDF files are allowed' }, { status: 400 });
+    }
+    if (file.size > 30 * 1024 * 1024) { // 10 MB
+      return NextResponse.json({ error: 'File size must be less than 10 MB' }, { status: 400 });
     }
 
     const userId = session.user.id;
@@ -49,6 +56,24 @@ export async function POST(req) {
         userId: userId,
       },
     });
+
+    // Internally call the processing endpoint
+    try {
+      const processRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/documents/process`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cookie': req.headers.get('cookie') || '', // pass session cookie for auth
+        },
+        body: JSON.stringify({ documentId: document.id }),
+      });
+      const processData = await processRes.json();
+      if (!processRes.ok) {
+        console.error('[Error] Document processing failed:', processData.error);
+      }
+    } catch (err) {
+      console.error('[Error] Failed to call internal processing endpoint:', err);
+    }
 
     return NextResponse.json({ success: true, documentId: document.id });
 
