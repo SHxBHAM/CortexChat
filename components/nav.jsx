@@ -6,6 +6,7 @@ import { ThemeToggle } from "./theme-toggle"
 import Link from "next/link"
 import { useSession, signIn, signOut } from "next-auth/react"
 import Image from "next/image"
+import { useEffect, useState } from "react"
 
 /**
  * Navigation component providing the main application header
@@ -17,6 +18,20 @@ import Image from "next/image"
  */
 export function Navigation() {
   const { data: session } = useSession()
+  const [hasDocs, setHasDocs] = useState(false);
+
+  useEffect(() => {
+    async function checkDocs() {
+      try {
+        const res = await fetch("/api/documents");
+        const data = await res.json();
+        setHasDocs(res.ok && data.documents && data.documents.length > 0);
+      } catch {
+        setHasDocs(false);
+      }
+    }
+    checkDocs();
+  }, []);
 
   return (
     <nav
@@ -43,6 +58,16 @@ export function Navigation() {
             >
               Features
             </a>
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              aria-label="Go to Chat"
+              disabled={!hasDocs}
+            >
+              <Link href="/chat">Chat</Link>
+            </Button>
             <Button
               variant="ghost"
               size="sm"

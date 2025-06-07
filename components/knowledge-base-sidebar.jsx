@@ -33,15 +33,15 @@ export function KnowledgeBaseSidebar({ selectedSource, onSourceChange, files, yo
             style={{ maxHeight: "calc(100vh - 300px)" }}
           >
             {/* PDF files list */}
-            {files.map((file, index) => (
+            {files.map((file) => (
               <div
-                key={`file-${index}`}
+                key={`file-${file.id}`}
                 className="flex items-center gap-2 p-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs"
                 role="listitem"
               >
                 <FileText className="w-3 h-3 text-zinc-600 dark:text-zinc-400 flex-shrink-0" aria-hidden="true" />
-                <span className="truncate text-zinc-600 dark:text-zinc-300" title={file}>
-                  {file}
+                <span className="truncate text-zinc-600 dark:text-zinc-300" title={file.name}>
+                  {file.name}
                 </span>
               </div>
             ))}

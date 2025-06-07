@@ -5,7 +5,7 @@ import { FileText, Youtube, ChevronDown } from "lucide-react"
  * @param {Object} props
  * @param {string} props.selectedSource
  * @param {function} props.onSourceChange
- * @param {Array} props.files
+ * @param {Array<{id: string, name: string}>} props.files
  * @param {Array} props.youtubeLinks
  */
 export function SourceSelector({ selectedSource, onSourceChange, files, youtubeLinks }) {
@@ -13,8 +13,9 @@ export function SourceSelector({ selectedSource, onSourceChange, files, youtubeL
   const getSelectedSourceText = () => {
     if (selectedSource === "all") return "All Sources"
     if (selectedSource.startsWith("file-")) {
-      const index = Number.parseInt(selectedSource.replace("file-", ""))
-      return files[index] || "Unknown File"
+      const fileId = selectedSource.replace("file-", "")
+      const file = files.find(f => f.id === fileId)
+      return file ? file.name : "Unknown File"
     }
     if (selectedSource.startsWith("yt-")) {
       const index = Number.parseInt(selectedSource.replace("yt-", ""))
@@ -62,23 +63,23 @@ export function SourceSelector({ selectedSource, onSourceChange, files, youtubeL
               <div className="border-t border-zinc-200 dark:border-zinc-800 my-1" />
             )}
             {/* Individual PDF files */}
-            {files.map((file, index) => (
+            {files.map((file) => (
               <button
-                key={`file-${index}`}
+                key={`file-${file.id}`}
                 onClick={() => {
-                  onSourceChange(`file-${index}`)
+                  onSourceChange(`file-${file.id}`)
                   setIsOpen(false)
                 }}
                 className={`w-full text-left px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors ${
-                  selectedSource === `file-${index}` ? "bg-zinc-100 dark:bg-zinc-900" : ""
+                  selectedSource === `file-${file.id}` ? "bg-zinc-100 dark:bg-zinc-900" : ""
                 }`}
                 role="option"
-                aria-selected={selectedSource === `file-${index}`}
+                aria-selected={selectedSource === `file-${file.id}`}
               >
                 <div className="flex items-center gap-2">
                   <FileText className="w-3 h-3 text-zinc-600 dark:text-zinc-400 flex-shrink-0" />
-                  <span className="truncate text-xs" title={file}>
-                    {file}
+                  <span className="truncate text-xs" title={file.name}>
+                    {file.name}
                   </span>
                 </div>
               </button>

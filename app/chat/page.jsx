@@ -1,41 +1,72 @@
 "use client"
 
-import React, { useRef, useState } from "react"
+import React, { useRef, useState, useEffect } from "react"
 import { ChatArea } from "../../components/chat-area"
 import { KnowledgeBaseSidebar } from "../../components/knowledge-base-sidebar"
+import { useSession, signIn } from "next-auth/react"
+import { FcGoogle } from "react-icons/fc"
 
-// Demo session data and files
-const demoFiles = ["example.pdf", "notes.pdf"]
-const demoYoutubeLinks = ["https://youtu.be/abc123"]
+// const demoYoutubeLinks = ["https://youtu.be/abc123"]
 const demoSessionData = {
   sessionId: "demo-session-1",
-  files: demoFiles,
-  youtubeLinks: demoYoutubeLinks,
+  files: [],
+  youtubeLinks: [],
 }
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState([
-    {
-      id: "1",
-      type: "user",
-      content: "What is in the PDF?",
-      timestamp: new Date(),
-    },
-    {
-      id: "2",
-      type: "ai",
-      content: "The PDF contains notes on AI and machine learning.",
-      timestamp: new Date(),
-      sources: ["example.pdf"],
-      reaction: null,
-    },
-  ])
+  const [messages, setMessages] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedSource, setSelectedSource] = useState("all")
   const messagesEndRef = useRef(null)
+  const [error, setError] = useState(null)
+  const [files, setFiles] = useState([]) // [{id, name}]
+  const [filesLoading, setFilesLoading] = useState(true)
+  const { data: session, status } = useSession()
 
-  // Simulate sending a message
-  const handleSendMessage = (content) => {
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
+  if (!session) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-300 dark:from-zinc-900 dark:to-zinc-800">
+        <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-xl p-10 flex flex-col items-center w-full max-w-sm">
+          <FcGoogle className="w-16 h-16 mb-4" />
+          <h1 className="text-2xl font-bold mb-2 text-black dark:text-white">Sign in to CortexChat</h1>
+          <p className="mb-6 text-zinc-600 dark:text-zinc-300 text-center">Please sign in with Google to chat with your knowledge base.</p>
+          <button
+            onClick={() => signIn("google")}
+            className="flex items-center gap-2 px-6 py-3 bg-black dark:bg-white text-white dark:text-black rounded-lg font-semibold text-lg shadow hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
+          >
+            <FcGoogle className="w-6 h-6" /> Sign in with Google
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Fetch user's uploaded documents
+  useEffect(() => {
+    async function fetchFiles() {
+      setFilesLoading(true)
+      try {
+        const res = await fetch("/api/documents")
+        const data = await res.json()
+        if (res.ok && data.documents) {
+          setFiles(data.documents.map(doc => ({ id: doc.id, name: doc.name })))
+        } else {
+          setFiles([])
+        }
+      } catch (err) {
+        setFiles([])
+      } finally {
+        setFilesLoading(false)
+      }
+    }
+    fetchFiles()
+  }, [])
+
+  // Send a message
+  const handleSendMessage = async (content) => {
     const newMessage = {
       id: Date.now().toString(),
       type: "user",
@@ -44,21 +75,55 @@ export default function ChatPage() {
     }
     setMessages((prev) => [...prev, newMessage])
     setIsLoading(true)
-    setTimeout(() => {
+    setError(null)
+    try {
+      let sourceToSend = selectedSource
+      if (selectedSource.startsWith("file-")) {
+        // Already in the correct format (file-<id>)
+        sourceToSend = selectedSource
+      } else if (selectedSource === "all") {
+        sourceToSend = "all"
+      }
+      const res = await fetch("/api/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          query: content,
+          source: sourceToSend,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to get answer")
+      }
       setMessages((prev) => [
         ...prev,
         {
           id: (Date.now() + 1).toString(),
           type: "ai",
-          content: `AI response to: ${content}`,
+          content: data.answer,
           timestamp: new Date(),
-          sources: selectedSource === "all" ? demoFiles : [selectedSource],
+          sources: data.sources,
           reaction: null,
         },
       ])
+    } catch (err) {
+      setError(err.message)
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          type: "ai",
+          content: `Error: ${err.message}`,
+          timestamp: new Date(),
+          sources: [],
+          reaction: null,
+        },
+      ])
+    } finally {
       setIsLoading(false)
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, 1200)
+    }
   }
 
   // Simulate loading a conversation
@@ -80,10 +145,16 @@ export default function ChatPage() {
       <KnowledgeBaseSidebar
         selectedSource={selectedSource}
         onSourceChange={setSelectedSource}
-        files={demoFiles}
-        youtubeLinks={demoYoutubeLinks}
+        files={files}
+        youtubeLinks={[]}
       />
       <div className="lg:col-span-4 flex flex-col h-screen">
+        {filesLoading && (
+          <div className="bg-blue-100 text-blue-700 p-2 text-sm text-center">Loading your documents...</div>
+        )}
+        {error && (
+          <div className="bg-red-100 text-red-700 p-2 text-sm text-center">{error}</div>
+        )}
         <ChatArea
           messages={messages}
           isLoading={isLoading}
@@ -91,7 +162,7 @@ export default function ChatPage() {
           onLoadConversation={handleLoadConversation}
           onReaction={handleReaction}
           messagesEndRef={messagesEndRef}
-          sessionData={demoSessionData}
+          sessionData={{ ...demoSessionData, files: files.map(f => f.name) }}
         />
       </div>
     </div>
