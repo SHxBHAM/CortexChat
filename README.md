@@ -2,13 +2,13 @@
 
 CortexChat is an AI-powered assistant that lets users interact with their own content — PDF documents or YouTube videos — through natural language. You upload a textbook, lecture notes, or a video, and CortexChat builds a searchable knowledge base from it. Then you can ask questions and get grounded, context-aware responses based strictly on what you've uploaded.
 
-It’s a Retrieval-Augmented Generation (RAG) system that works with content you care about.
+It's a Retrieval-Augmented Generation (RAG) system that works with content you care about.
 
 ---
 
 ## Why This Exists
 
-Reading through long PDFs, technical papers, or recorded lectures just to find one piece of information is frustrating and inefficient. General-purpose AI tools don't solve this — they either hallucinate answers or can’t access your actual content.
+Reading through long PDFs, technical papers, or recorded lectures just to find one piece of information is frustrating and inefficient. General-purpose AI tools don't solve this — they either hallucinate answers or can't access your actual content.
 
 CortexChat is designed to let you ask real questions about your documents and videos — and get real answers, grounded in those materials.
 
@@ -24,26 +24,25 @@ This is useful for:
 ## What It Does
 
 - Upload multiple PDF files
-- Paste multiple YouTube links (we automatically fetch and clean the transcripts)
 - Ask natural language questions
 - Receive answers based only on the content you've uploaded
 - View the sources (document names, video timestamps) that were used to generate each answer
 
-It’s a simple idea: make your materials conversational.
+It's a simple idea: make your materials conversational.
 
 ---
 
 ## How It Works (Technically)
 
-CortexChat is built using a modular RAG (Retrieval-Augmented Generation) architecture, designed for adaptability. We’re currently using **Google's Gemini models** for both vector embedding and answer generation.
+CortexChat is built using a modular RAG (Retrieval-Augmented Generation) architecture, designed for adaptability. We're currently using **Google's Gemini models** for both vector embedding and answer generation.
 
 ### Architecture Overview
 
 - **Frontend**: Built with **Next.js App Router** for a smooth, modern experience. UI is dark-mode-first and inspired by Vercel/Linear.
 - **Backend**: Server-side processing handled with Next.js server actions and APIs.
 - **Document Processing**: Uploaded files and transcripts are chunked using token-aware logic (splitting by sentence, paragraph, etc.).
-- **Embeddings**: Chunks are embedded via **Gemini’s embedding APIs**, creating high-dimensional vectors representing meaning.
-- **Vector Store**: We’re using **PostgreSQL with pgvector** to store and search embeddings using cosine similarity.
+- **Embeddings**: Chunks are embedded via **Gemini's embedding APIs**, creating high-dimensional vectors representing meaning.
+- **Vector Store**: We're using **PostgreSQL with pgvector** to store and search embeddings using cosine similarity.
 - **LLM Responses**: Gemini generates final responses using top-k retrieved chunks as context. The system is designed to inject citations when possible.
 
 ---
@@ -66,7 +65,7 @@ The final result is a response you can trust — because you know where it came 
 
 We're actively building the MVP. Key features in development:
 
-- PDF and YouTube upload support
+- PDF upload support
 - Multi-source chunking and storage
 - Fast semantic retrieval via pgvector
 - Chat interface with streaming responses from Gemini
@@ -93,6 +92,12 @@ Later down the line:
 
 ---
 
+## Future Prospects
+
+- **YouTube Link Support**: Planned feature to allow users to paste YouTube links and automatically fetch and clean transcripts for RAG-based Q&A. This will enable conversational search over video content, similar to PDF support.
+
+---
+
 ## Tech Stack
 
 - **Frontend**: Next.js (App Router), TailwindCSS, shadcn/ui
@@ -106,9 +111,9 @@ Later down the line:
 
 ## Contributions
 
-We're building CortexChat to be a robust but flexible tool — and we're doing it in the open. If you're interested in retrieval systems, UI/UX for AI tools, embeddings, or building with Gemini, we’d love to have you involved.
+We're building CortexChat to be a robust but flexible tool — and we're doing it in the open. If you're interested in retrieval systems, UI/UX for AI tools, embeddings, or building with Gemini, we'd love to have you involved.
 
-Everything’s modular: the embedding stack, chunking logic, and UI components can be reused or swapped. Contributions, feedback, and testing are all welcome.
+Everything's modular: the embedding stack, chunking logic, and UI components can be reused or swapped. Contributions, feedback, and testing are all welcome.
 
 ---
 

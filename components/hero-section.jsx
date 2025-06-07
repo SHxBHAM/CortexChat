@@ -25,7 +25,7 @@ export function HeroSection() {
 
         {/* Supporting description explaining the core functionality */}
         <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-          Upload PDFs and YouTube videos, then engage in intelligent conversations powered by <span className="italic">your very own</span> knowledge base.
+          Upload PDFs, then engage in intelligent conversations powered by <span className="italic">your very own</span> knowledge base.
         </p>
 
         {/* Call-to-action button */}

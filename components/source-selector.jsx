@@ -1,14 +1,13 @@
 "use client"
 import React, { useState } from "react"
-import { FileText, Youtube, ChevronDown } from "lucide-react"
+import { FileText, ChevronDown } from "lucide-react"
 /**
  * @param {Object} props
  * @param {string} props.selectedSource
  * @param {function} props.onSourceChange
  * @param {Array<{id: string, name: string}>} props.files
- * @param {Array} props.youtubeLinks
  */
-export function SourceSelector({ selectedSource, onSourceChange, files, youtubeLinks }) {
+export function SourceSelector({ selectedSource, onSourceChange, files }) {
   const [isOpen, setIsOpen] = useState(false)
   const getSelectedSourceText = () => {
     if (selectedSource === "all") return "All Sources"
@@ -16,10 +15,6 @@ export function SourceSelector({ selectedSource, onSourceChange, files, youtubeL
       const fileId = selectedSource.replace("file-", "")
       const file = files.find(f => f.id === fileId)
       return file ? file.name : "Unknown File"
-    }
-    if (selectedSource.startsWith("yt-")) {
-      const index = Number.parseInt(selectedSource.replace("yt-", ""))
-      return `Video ${index + 1}`
     }
     return "All Sources"
   }
@@ -59,7 +54,7 @@ export function SourceSelector({ selectedSource, onSourceChange, files, youtubeL
               All Sources
             </button>
             {/* Separator */}
-            {(files.length > 0 || youtubeLinks.length > 0) && (
+            {files.length > 0 && (
               <div className="border-t border-zinc-200 dark:border-zinc-800 my-1" />
             )}
             {/* Individual PDF files */}
@@ -81,26 +76,6 @@ export function SourceSelector({ selectedSource, onSourceChange, files, youtubeL
                   <span className="truncate text-xs" title={file.name}>
                     {file.name}
                   </span>
-                </div>
-              </button>
-            ))}
-            {/* Individual YouTube videos */}
-            {youtubeLinks.map((link, index) => (
-              <button
-                key={`yt-${index}`}
-                onClick={() => {
-                  onSourceChange(`yt-${index}`)
-                  setIsOpen(false)
-                }}
-                className={`w-full text-left px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors ${
-                  selectedSource === `yt-${index}` ? "bg-zinc-100 dark:bg-zinc-900" : ""
-                }`}
-                role="option"
-                aria-selected={selectedSource === `yt-${index}`}
-              >
-                <div className="flex items-center gap-2">
-                  <Youtube className="w-3 h-3 text-zinc-600 dark:text-zinc-400 flex-shrink-0" />
-                  <span className="truncate text-xs">Video {index + 1}</span>
                 </div>
               </button>
             ))}

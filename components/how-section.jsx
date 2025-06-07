@@ -11,8 +11,8 @@ export function HowItWorksSection() {
   const steps = [
     {
       icon: Upload,
-      title: "Upload Content",
-      description: "Add PDFs and YouTube videos to build your knowledge base",
+      title: "Add Content",
+      description: "Add PDFs to build your knowledge base",
     },
     {
       icon: FileText,

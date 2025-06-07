@@ -1,16 +1,15 @@
 "use client"
 import React from "react"
 import { Card, CardContent } from "./ui/card"
-import { FileText, Youtube } from "lucide-react"
+import { FileText } from "lucide-react"
 import { SourceSelector } from "./source-selector"
 /**
  * @param {Object} props
  * @param {string} props.selectedSource
  * @param {function} props.onSourceChange
- * @param {Array} props.files
- * @param {Array} props.youtubeLinks
+ * @param {Array<{id: string, name: string}>} props.files
  */
-export function KnowledgeBaseSidebar({ selectedSource, onSourceChange, files, youtubeLinks }) {
+export function KnowledgeBaseSidebar({ selectedSource, onSourceChange, files }) {
   return (
     <Card className="lg:col-span-1 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black h-full flex flex-col">
       <CardContent className="p-4 flex flex-col h-full">
@@ -20,7 +19,6 @@ export function KnowledgeBaseSidebar({ selectedSource, onSourceChange, files, yo
             selectedSource={selectedSource}
             onSourceChange={onSourceChange}
             files={files}
-            youtubeLinks={youtubeLinks}
           />
         </div>
         {/* Knowledge base overview - scrollable */}
@@ -43,17 +41,6 @@ export function KnowledgeBaseSidebar({ selectedSource, onSourceChange, files, yo
                 <span className="truncate text-zinc-600 dark:text-zinc-300" title={file.name}>
                   {file.name}
                 </span>
-              </div>
-            ))}
-            {/* YouTube videos list */}
-            {youtubeLinks.map((link, index) => (
-              <div
-                key={`yt-${index}`}
-                className="flex items-center gap-2 p-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-xs"
-                role="listitem"
-              >
-                <Youtube className="w-3 h-3 text-zinc-600 dark:text-zinc-400 flex-shrink-0" aria-hidden="true" />
-                <span className="truncate text-zinc-600 dark:text-zinc-300">Video {index + 1}</span>
               </div>
             ))}
           </div>

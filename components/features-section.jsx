@@ -10,9 +10,8 @@ export function FeaturesSection() {
   const features = [
     {
       icon: Upload,
-      title: "Multi-Format Support",
-      description:
-        "Upload PDFs and YouTube videos seamlessly. Our AI processes diverse content types for comprehensive knowledge extraction.",
+      title: "PDF Upload",
+      description: "Upload PDFs and build a knowledge base you can chat with. Our AI processes your documents for comprehensive knowledge extraction.",
     },
     {
       icon: Brain,
@@ -43,7 +42,7 @@ export function FeaturesSection() {
       title: "Source Attribution",
       description:
         "Every answer includes source references, so you can verify information and dive deeper into your content.",
-    },
+    }
   ]
 
   return (
@@ -54,7 +53,7 @@ export function FeaturesSection() {
             Powerful Features for Smart Content Interaction
           </h2>
           <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-3xl mx-auto">
-            Transform how you interact with your documents and videos using cutting-edge AI technology
+            Transform how you interact with your documents using cutting-edge AI technology
           </p>
         </div>
 

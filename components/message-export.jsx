@@ -10,7 +10,7 @@ import { Download, FileText, Loader2 } from "lucide-react"
 export function MessageExport({ messages, sessionData }) {
   const [isExporting, setIsExporting] = useState(false)
   const formatMessagesForExport = () => {
-    const header = `CortexChat Conversation Export\nGenerated: ${new Date().toLocaleString()}\nSession ID: ${sessionData?.sessionId || "Unknown"}\nFiles: ${sessionData?.files?.join(", ") || "None"}\nVideos: ${sessionData?.youtubeLinks?.length || 0} YouTube videos\n\n----------------------------------------\n\n`
+    const header = `CortexChat Conversation Export\nGenerated: ${new Date().toLocaleString()}\nSession ID: ${sessionData?.sessionId || "Unknown"}\nFiles: ${sessionData?.files?.join(", ") || "None"}\n\n----------------------------------------\n\n`
     const formattedMessages = messages
       .map((message) => {
         const timestamp = new Date(message.timestamp).toLocaleString()

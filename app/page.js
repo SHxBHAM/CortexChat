@@ -12,6 +12,7 @@ import { HowItWorksSection } from "../components/how-section.jsx"
  * - Feature showcase
  * - How it works explanation
  * - Responsive design with light/dark mode support
+ * - Upload your PDF documents and chat with your knowledge base
  */
 export default function HomePage() {
   return (

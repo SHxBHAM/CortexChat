@@ -6,11 +6,9 @@ import { KnowledgeBaseSidebar } from "../../components/knowledge-base-sidebar"
 import { useSession, signIn } from "next-auth/react"
 import { FcGoogle } from "react-icons/fc"
 
-// const demoYoutubeLinks = ["https://youtu.be/abc123"]
 const demoSessionData = {
   sessionId: "demo-session-1",
   files: [],
-  youtubeLinks: [],
 }
 
 export default function ChatPage() {
@@ -146,7 +144,6 @@ export default function ChatPage() {
         selectedSource={selectedSource}
         onSourceChange={setSelectedSource}
         files={files}
-        youtubeLinks={[]}
       />
       <div className="lg:col-span-4 flex flex-col h-screen">
         {filesLoading && (
