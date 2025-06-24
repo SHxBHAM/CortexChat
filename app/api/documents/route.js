@@ -12,9 +12,6 @@ export const runtime = 'nodejs'
 export async function GET(req) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
     const documents = await prisma.document.findMany({
       where: { userId: session.user.id },
       select: { id: true, name: true, type: true },
